@@ -27,11 +27,12 @@
 development: &common_settings
   adapter: postgresql
   encoding: unicode
-  user: postgres
-  host: localhost
-  port: 5432
   pool: 5
-  database: sonata
+  host: <%= ENV['DATABASE_HOST'] || 'postgres' %>
+  port: <%= ENV['DATABASE_PORT'] || 5432 %>
+  database: <%= ENV['DATABASE_NAME'] || 'gatekeeper' %>
+  username: <%= ENV['POSTGRES_USER'] || 'postgres' %>
+  password: <%= ENV['POSTGRES_PASSWORD'] || 'sonatatest' %>
 
 test:
   <<: *common_settings
@@ -39,11 +40,6 @@ test:
 
 integration:
   <<: *common_settings
-  host: <%= ENV['DATABASE_HOST'] || 'postgres' %>
-  port: <%= ENV['DATABASE_PORT'] || 5432 %>
-  database: <%= ENV['DATABASE_NAME'] || 'gatekeeper' %>
-  username: <%= ENV['POSTGRES_USER'] || 'postgres' %>
-  password: <%= ENV['POSTGRES_PASSWORD'] || 'sonatatest' %>
 
 qualification:
   <<: *common_settings

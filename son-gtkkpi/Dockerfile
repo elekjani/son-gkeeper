@@ -9,9 +9,8 @@ COPY *.gemspec /app
 COPY ./lib /app/lib
 RUN bundle install
 COPY . /app
-EXPOSE 5400
 WORKDIR /app
 ENV PUSHGATEWAY_HOST prometheus
 ENV PUSHGATEWAY_PORT 9091
-ENV PORT 5400
+ENV PORT 80
 CMD ["foreman", "start"]

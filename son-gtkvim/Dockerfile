@@ -7,12 +7,11 @@ WORKDIR /app
 COPY Gemfile /app
 RUN bundle install
 COPY . /app
-EXPOSE 5700
 WORKDIR /app
 ENV POSTGRES_PASSWORD sonata
 ENV POSTGRES_USER sonatatest
 ENV DATABASE_HOST postgres
 ENV DATABASE_PORT 5432
 ENV MQSERVER amqp://guest:guest@broker:5672
-ENV PORT 5700
+ENV PORT 80
 CMD ["foreman", "start"]

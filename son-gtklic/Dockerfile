@@ -23,9 +23,7 @@ ENV POSTGRES_USER postgres
 ENV POSTGRES_DB gatekeeper
 ENV DATABASE_HOST postgres
 ENV DATABASE_PORT 5432
-ENV PORT 5000
-
-EXPOSE 6000
+ENV PORT 80
 
 # Run Server
 CMD ["python", "manage.py", "runserver", "--host", "0.0.0.0"]

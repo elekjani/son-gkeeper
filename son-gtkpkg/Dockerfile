@@ -7,8 +7,7 @@ WORKDIR /app
 COPY Gemfile /app
 RUN bundle install
 COPY . /app
-EXPOSE 5100
 WORKDIR /app
 ENV CATALOGUE_URL http://catalogues:4002/catalogues
-ENV PORT 5100
+ENV PORT 80
 CMD ["foreman", "start"]

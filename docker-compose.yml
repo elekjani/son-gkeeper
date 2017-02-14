@@ -1,213 +1,88 @@
-version: '2'
+version: '3'
+
+networks:
+  service_network:
+    external: true
+
 services:
   son-gtkapi:
-    image: registry.sonata-nfv.eu:5000/son-gtkapi
-    links:
-     - son-gtkpkg
-     - son-gtksrv
-    environment:
-     - RACK_ENV=integration
-     - PACKAGE_MANAGEMENT_URL=http://son-gtkpkg:5100
-     - SERVICE_MANAGEMENT_URL=http://son-gtksrv:5300
-     - FUNCTION_MANAGEMENT_URL=http://son-gtkfnct:5500 # 5600?
-     - VIM_MANAGEMENT_URL=http://son-gtkvim:5700
-     - RECORD_MANAGEMENT_URL=http://son-gtkrec:5800
-     - KPI_MANAGEMENT_URL=http://son-gtkkpi:5400
-    ports:
-      - "32001:5000"
+    build: ./son-gtkapi
+    image: son-gtkapi:SNAPSHOT
+    env_file: ./docker-compose-env
+    container_name: son-gtkapi
+    networks:
+      - service_network
     restart: always
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://logs.sonata-nfv.eu:12900"
-  
+    ports:
+      - "32001:80"
+    depends_on:
+      - son-gtkpkg
+      - son-gtksrv
+      - son-gtkfnct
+      - son-gtkvim
+      - son-gtkrec
+
   son-gtkpkg:
-    image: registry.sonata-nfv.eu:5000/son-gtkpkg
-    environment:
-     - RACK_ENV=integration
-     - CATALOGUES_URL=http://sp.int.sonata-nfv.eu:4002/catalogues
-    ports:
-      - "5100"
+    build: ./son-gtkpkg
+    image: son-gtkpkg:SNAPSHOT
+    env_file: ./docker-compose-env
+    container_name: son-gtkpkg
+    networks:
+      - service_network
     restart: always
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://logs.sonata-nfv.eu:12900"
 
   son-gtkfnct:
-    image: registry.sonata-nfv.eu:5000/son-gtkfnct
-    ports:
-      - "5500"
+    build: ./son-gtkfnct
+    image: son-gtkfnct:SNAPSHOT
+    env_file: ./docker-compose-env
+    container_name: son-gtkfnct
+    networks:
+      - service_network
     restart: always
-    environment:
-     - RACK_ENV=integration
-     - CATALOGUES_URL=http://sp.int.sonata-nfv.eu:4002/catalogues
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://logs.sonata-nfv.eu:12900"
-
-  son-gtksrv:
-    image: registry.sonata-nfv.eu:5000/son-gtksrv
-    links:
-     - broker
-     - postgres
-    ports:
-      - "5300"
-    restart: always
-    environment:
-     - POSTGRES_PASSWORD=sonata
-     - POSTGRES_USER=sonatatest
-     - RACK_ENV=integration
-     - DATABASE_HOST=postgres
-     - DATABASE_PORT=5432
-     - MQSERVER=amqp://guest:guest@broker:5672
-     - CATALOGUES_URL=http://sp.int.sonata-nfv.eu:4002/catalogues
-    depends_on:
-     - postgres
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://logs.sonata-nfv.eu:12900"
-
-  son-gtkvim:
-    image: registry.sonata-nfv.eu:5000/son-gtkvim
-    links:
-     - broker
-     - postgres
-    ports:
-      - "5700"
-    restart: always
-    environment:
-     - POSTGRES_PASSWORD=sonata
-     - POSTGRES_USER=sonatatest
-     - RACK_ENV=integration
-     - DATABASE_HOST=postgres
-     - DATABASE_PORT=5432
-     - MQSERVER=amqp://guest:guest@broker:5672
-    depends_on:
-     - postgres
-    extra_hosts:
-      - "jenkins.sonata-nfv.eu:192.168.60.5"
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://logs.sonata-nfv.eu:12900"
 
   son-gtkrec:
-    image: registry.sonata-nfv.eu:5000/son-gtkrec
-    ports:
-      - "5800"
+    build: ./son-gtkrec
+    image: son-gtkrec:SNAPSHOT
+    env_file: ./docker-compose-env
+    container_name: son-gtkrec
+    networks:
+      - service_network
     restart: always
-    environment:
-     - RACK_ENV=integration
-     - REPOSITORIES_URL=http://sp.int.sonata-nfv.eu:4002/records
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://logs.sonata-nfv.eu:12900"
 
-  son-gtklic:
-    image: registry.sonata-nfv.eu:5000/son-gtklic
-    links:
-     - postgres
-    ports:
-      - "5900"
+  son-gtksrv:
+    build: ./son-gtksrv
+    image: son-gtksrv:SNAPSHOT
+    env_file: ./docker-compose-env
+    container_name: son-gtksrv
+    networks:
+      - service_network
     restart: always
-    environment:
-     - POSTGRES_PASSWORD=sonata
-     - POSTGRES_USER=sonatatest
-     - RACK_ENV=integration
-     - DATABASE_HOST=postgres
-     - DATABASE_PORT=5432
     depends_on:
-     - postgres
-    extra_hosts:
-      - "jenkins.sonata-nfv.eu:192.168.60.5"
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://logs.sonata-nfv.eu:12900"
+      - postgres
+      - broker
 
-  son-gtkkpi:
-    image: registry.sonata-nfv.eu:5000/son-gtkkpi    
-    ports:
-      - "5400"
+  son-gtkvim:
+    build: ./son-gtkvim
+    image: son-gtkvim:SNAPSHOT
+    env_file: ./docker-compose-env
+    container_name: son-gtkvim
+    networks:
+      - service_network
     restart: always
-    environment:
-     - PUSHGATEWAY_HOST=prometheus
-     - PUSHGATEWAY_PORT=9091     
-     - POSTGRES_PASSWORD=sonata
-     - POSTGRES_USER=sonatatest
-     - RACK_ENV=integration
-     - DATABASE_HOST=postgres
-     - DATABASE_PORT=5432
     depends_on:
-     - postgres
-    extra_hosts:
-      - "jenkins.sonata-nfv.eu:192.168.60.5"
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://logs.sonata-nfv.eu:12900"        
+      - postgres
+      - broker
 
   postgres:
     image: ntboes/postgres-uuid
-    ports:
-     - "5432"
-    environment:
-     - POSTGRES_PASSWORD=sonata
-     - POSTGRES_USER=sonatatest
-     - POSTGRES_DB=gatekeeper
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://logs.sonata-nfv.eu:12900"
+    env_file: ./docker-compose-env
+    container_name: postgres
+    networks:
+      - service_network
 
   broker:
     image: rabbitmq:3
-    ports:
-     - "5672"
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://logs.sonata-nfv.eu:12900"
-        
-  influx:
-   image: registry.sonata-nfv.eu:5000/son-monitor-influxdb
-   restart: always
-   ports:
-    - "8086:8086"
-
-  #mysql:
-  # image: registry.sonata-nfv.eu:5000/son-monitor-mysql
-  # restart: always
-  # ports:
-  #  - "3306:3306"
-  # environment:
-  #  - MYSQL_ROOT_PASSWORD=1234
-  #  - MYSQL_USER=monitoringuser
-  #  - MYSQL_PASSWORD=sonata
-  #  - MYSQL_DATABASE=monitoring
-
-  pushgateway:
-   image: registry.sonata-nfv.eu:5000/son-monitor-pushgateway
-   restart: always
-   ports:
-    - "9091:9091"
-
-  prometheus:
-   image: registry.sonata-nfv.eu:5000/son-monitor-prometheus
-   restart: always
-   volumes:
-    - /tmp/monitoring/prom/apache:/var/log/apache2
-   ports:
-    - "9090:9090"
-    - "9089:9089"
-   depends_on:
-    - pushgateway
-    - influx
-   environment:
-    - RABBIT_URL=sp.int.sonata-nfv.eu:5672
-    - EMAIL_PASS=czBuQHRAX21vbl9zeXNfMTY=
-
+    env_file: ./docker-compose-env
+    container_name: broker
+    networks:
+      - service_network

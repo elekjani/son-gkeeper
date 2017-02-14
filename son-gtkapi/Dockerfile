@@ -7,14 +7,13 @@ WORKDIR /app
 COPY Gemfile /app
 RUN bundle install
 COPY . /app
-EXPOSE 5000
 WORKDIR /app
-ENV PORT 5000
-ENV PACKAGE_MANAGEMENT_URL http://son-gtkpkg:5100
-ENV SERVICE_MANAGEMENT_URL http://son-gtksrv:5300
-ENV FUNCTION_MANAGEMENT_URL http://son-gtkfnct:5500
-ENV VIM_MANAGEMENT_URL http://son-gtkvim:5700
-ENV RECORD_MANAGEMENT_URL http://son-gtkrec:5800
-ENV LICENCE_MANAGEMENT_URL http://son-gtklic:5900
-ENV KPI_MANAGEMENT_URL http://son-gtkkpi:5400
+ENV PORT 80
+ENV PACKAGE_MANAGEMENT_URL http://son-gtkpkg
+ENV SERVICE_MANAGEMENT_URL http://son-gtksrv
+ENV FUNCTION_MANAGEMENT_URL http://son-gtkfnct
+ENV VIM_MANAGEMENT_URL http://son-gtkvim
+ENV RECORD_MANAGEMENT_URL http://son-gtkrec
+ENV LICENCE_MANAGEMENT_URL http://son-gtklic
+ENV KPI_MANAGEMENT_URL http://son-gtkkpi
 CMD ["foreman", "start"]
