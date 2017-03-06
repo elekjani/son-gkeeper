@@ -54,7 +54,7 @@ class Package
     raise NoParamsProvided.new(method + 'no parameters has been provided') unless params
 
     @logger = logger
-    @service = {}
+    @service = nil
     @functions = []
     @@catalogue = catalogue
     @logger.debug(method) {"@@catalogue=#{@@catalogue.inspect}"}
