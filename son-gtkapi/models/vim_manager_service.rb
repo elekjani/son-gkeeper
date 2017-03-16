@@ -69,7 +69,7 @@ class VimManagerService < ManagerService
     begin
       @@logger.debug(method) {"@url = " + self.url}
       response = postCurb(url:self.url+'/vim', body: params.to_json)
-      @@logger.debug(method) {"response="+response}
+      @@logger.debug(method) {"response=#{response}"}
       response
     rescue => e
       @@logger.error(method) {"Error during processing: #{$!}"}
